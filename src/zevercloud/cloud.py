@@ -113,6 +113,65 @@ class ZeverCloud:
             for entry in response["data"]
         ]
 
+    def get_details(self, date: date, psno: str) -> List[Dict[str, Union[datetime, int, float, str]]]:
+        """
+        Get monitor details at 10-minutes on the provided date.
+
+        Returns a list of dictionaries of the form:
+        [
+           {
+            'ac_frequency': 50,
+            'ac_power': 30,
+            'ac_current_p1': 0,
+            'ac_current_p2': 0,
+            'ac_current_p3': 0,
+            'ac_voltage_p1': 236.8,
+            'ac_voltage_p2': 0,
+            'ac_voltage_p3': 0,
+            'inverter_id': 'ZS12345678',
+            'pv_current_1': 0,
+            'pv_current_2': 0,
+            'pv_current_3': 0,
+            'pv_voltage_1': 271.4,
+            'pv_voltage_2': 0,
+            'pv_voltage_3': 0,
+            'temperature': 26.7,
+            'timestamp': datetime.datetime(2022, 8, 1, 6, 49, 37),
+            'yield_today': 0.1,
+            'yield_total': 5615.2
+           }
+        ]
+
+        Args:
+            date (date): The date for which to request the data.
+            psno (str): The ID of the monitor. E.g. EAB1234C5678.
+        """
+        response = self._get(f"/getpmudata?apikey={self.api_key}&date={date.strftime('%Y-%m-%d')}&psno={psno}")
+        return [
+            dict(
+                ac_frequency=entry.get("fac"),
+                ac_power=entry.get("pac"),
+                ac_current_p1=entry.get("iac1"),
+                ac_current_p2=entry.get("iac2"),
+                ac_current_p3=entry.get("iac3"),
+                ac_voltage_p1=entry.get("vac1"),
+                ac_voltage_p2=entry.get("vac2"),
+                ac_voltage_p3=entry.get("vac3"),
+                inverter_id=entry.get("isno"),
+                pv_current_1=entry.get("ipv1"),
+                pv_current_2=entry.get("ipv2"),
+                pv_current_3=entry.get("ipv3"),
+                pv_voltage_1=entry.get("vpv1"),
+                pv_voltage_2=entry.get("vpv2"),
+                pv_voltage_3=entry.get("vpv3"),
+                temperature=entry.get("tempval"),
+                timestamp=datetime.strptime(entry["recvdate"], "%Y-%m-%d %H:%M:%S"),
+                yield_today=entry.get("e_today"),
+                yield_total=entry.get("e_total"),
+            )
+            for entry in response["data"]
+        ]
+
     def get_daily_output(self, month: date) -> List[Dict[str, Any]]:
         """
         Get the daily yield of the site in the given month.
@@ -215,7 +274,7 @@ class ZeverCloud:
             for entry in result["data"]
         ]
 
-    def _get(self, url: str, subdomain: str = "general") -> Dict[str, Any]:
+    def _get(self, url: str) -> Dict[str, Any]:
         # TODO: rate limiting
         headers_to_sign = {"X-Ca-Key": self.app_key}
         headers_string = "".join([f"{key}:{headers_to_sign[key]}\n" for key in sorted(headers_to_sign.keys())])
@@ -231,8 +290,7 @@ class ZeverCloud:
             "Accept": "application/json",
             **headers_to_sign,
         }
-        print(f"http://api.{subdomain}.zevercloud.cn{url}")
-        response = get(f"http://api.{subdomain}.zevercloud.cn{url}", headers=headers)
+        response = get(f"http://api.general.zevercloud.cn{url}", headers=headers)
         if response.status_code == 400:
             print(response.headers)
         response.raise_for_status()

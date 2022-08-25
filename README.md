@@ -127,3 +127,38 @@ The `ZeverSolarEvent` has a human-readable `event_description`.
 **Note**: the internal Zevercloud API can only return events for 7 days at a time. Using
 the `get_events`-method on a large date range will result in many API-calls being made,
 and may hence possibly take a rather long time.
+
+### Detailed logs
+
+More detailed logs can be retrieved with `get_details`. This endpoint requires the id of the monitor
+as input. This monitor can be found on the ZeverCloud website.
+
+```python
+zc.get_details(date=date(2022, 1, 1), psno="EAB1234C5678")
+```
+```shell
+>>  [
+       {
+          'ac_frequency': 50,
+          'ac_power': 30,
+          'ac_current_p1': 0,
+          'ac_current_p2': 0,
+          'ac_current_p3': 0,
+          'ac_voltage_p1': 236.8,
+          'ac_voltage_p2': 0,
+          'ac_voltage_p3': 0,
+          'inverter_id': 'ZS12345678',
+          'pv_current_1': 0,
+          'pv_current_2': 0,
+          'pv_current_3': 0,
+          'pv_voltage_1': 271.4,
+          'pv_voltage_2': 0,
+          'pv_voltage_3': 0,
+          'temperature': 26.7,
+          'timestamp': datetime.datetime(2022, 8, 1, 6, 49, 37),
+          'yield_today': 0.1,
+          'yield_total': 5615.2
+       },
+       ...
+    ]  
+```
