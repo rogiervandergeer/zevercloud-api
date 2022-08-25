@@ -2,7 +2,9 @@ from base64 import b64encode
 from datetime import datetime, date, time, timedelta
 from hashlib import sha256
 from hmac import new as hmac
+from time import time as timestamp
 from typing import Any, Dict, List, Union
+from uuid import uuid4
 
 from requests import get
 
@@ -276,7 +278,11 @@ class ZeverCloud:
 
     def _get(self, url: str) -> Dict[str, Any]:
         # TODO: rate limiting
-        headers_to_sign = {"X-Ca-Key": self.app_key}
+        headers_to_sign = {
+            "X-Ca-Key": self.app_key,
+            "X-Ca-Nonce": str(uuid4()),
+            "X-Ca-Timestamp": str(int(timestamp() * 1000)),
+        }
         headers_string = "".join([f"{key}:{headers_to_sign[key]}\n" for key in sorted(headers_to_sign.keys())])
         payload = f"GET\napplication/json\n\n\n\n{headers_string}{url}"
         signature = hmac(
@@ -292,6 +298,7 @@ class ZeverCloud:
         }
         response = get(f"http://api.general.zevercloud.cn{url}", headers=headers)
         if response.status_code == 400:
+            # TODO: error handling
             print(response.headers)
         response.raise_for_status()
         return response.json()
