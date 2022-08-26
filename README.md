@@ -128,12 +128,6 @@ The `ZeverSolarEvent` has a human-readable `event_description`.
 the `get_events`-method on a large date range will result in many API-calls being made,
 and may hence possibly take a rather long time.
 
-## Releases
-
-- `0.2.1` Improve security by adding timestamp and nonce to requests
-- `0.2.0` Add `get_details` method
-- `0.1.0` First working version
-
 ### Detailed logs
 
 More detailed logs can be retrieved with `get_details`. This endpoint requires the id of the monitor
@@ -168,3 +162,9 @@ zc.get_details(date=date(2022, 1, 1), psno="EAB1234C5678")
        ...
     ]  
 ```
+
+## Releases
+
+- `0.2.1` Improve security by adding timestamp and nonce to requests
+- `0.2.0` Add `get_details` method
+- `0.1.0` First working version
