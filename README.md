@@ -1,6 +1,6 @@
 # Zevercloud API
 
-Python API for the Zevercloud API
+Python wrapper for the Zevercloud API
 
 **Note**: _This piece of software is not approved or endorsed by ZeverCloud. Nor do I endorse their products._
 
